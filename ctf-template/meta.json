@@ -1,0 +1,20 @@
+{
+  "title": "题名（与目录同名即可）",
+  "platform": "平台名",
+  "target": "127.0.0.1:8080",
+  "attachment": "challenge.zip",
+  "status": "solved",
+  "flag": "flag{...}",
+  "flag_evidence": "产生这个 flag 的命令或脚本（一行）",
+  "wp": "solve.md",
+  "submission": { "attempts": 1, "result": "accepted" },
+  "errors": [
+    "这一步报了什么错（一行，保留原始关键字符串）"
+  ],
+  "pitfalls": [
+    "这类题的通用教训（可跨题复用的一条）"
+  ],
+  "date": "2026-01-01",
+  "updated": "2026-01-01T00:00:00+08:00",
+  "notes": "补充说明，可选"
+}

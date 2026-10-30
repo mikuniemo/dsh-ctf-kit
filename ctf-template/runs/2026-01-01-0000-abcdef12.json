@@ -1,0 +1,10 @@
+{
+  "session": "abcdef12",
+  "date": "2026-01-01",
+  "status": "unsolved",
+  "flag": null,
+  "summary": "这一次会话试了什么、卡在哪、结论是什么（两三句）",
+  "errors": ["本会话的一条原始报错"],
+  "pitfalls": ["本会话学到的一条"],
+  "updated": "2026-01-01T00:00:00+08:00"
+}

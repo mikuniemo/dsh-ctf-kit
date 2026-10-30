@@ -1,0 +1,23 @@
+# CTF 题板 · bundle patch
+#
+# 两个座位，一份状态：
+#   conversation.view                     → 视图栏新增「CTF」独立视图（对话 / 轨迹 / 上下文 / 编队 / CTF）
+#   conversation.session.header.actions   → ctf 模式下的状态条（解出 / flag / 未解 / 踩坑）
+#
+# 数据只来自题卡目录 __DSH_HOME__\ctf\<题名>\（meta.json + runs\*.json + solve.md），
+# 不新造账本；agent 按 ctf persona 的约定直接写文件，本插件只读。
+#
+# 不硬注入任何服务：agents / agentPresets / webServer 全部在 apply 里惰性取，
+# 取不到就降级（mode 未知 → 状态条不显示，视图照常可开）。
+#
+# 安装期占位符：`__DSH_HOME__` 会被替换成本机 DSH_HOME 绝对路径。
+# 若忘了替换：题板不会崩，只是 scanProjects 返回 exists:false（显示"没有题卡"）。
+- insert:
+    - id: ctf-board
+      name: "@local/dsh-ctf-board"
+      config:
+        rootDir: '__DSH_HOME__\ctf'
+        sessionsRoot: '__DSH_HOME__\sessions'
+        routePrefix: /dsh-ctf-board
+        refreshMs: 15000
+        logDir: '__DSH_HOME__\logs\ctf-board'

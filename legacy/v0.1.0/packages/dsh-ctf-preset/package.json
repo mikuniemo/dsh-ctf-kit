@@ -1,0 +1,27 @@
+{
+  "name": "@local/dsh-ctf-preset",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "CTF 模式独立包：只声明一个 ctf agent preset（pwn/rev/crypto/web/misc/forensics），零第三方依赖，全部使用 dsh 自带插件",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "dsh": {
+    "plugin": true,
+    "kind": "server",
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "name": "dsh-ctf-kit",
+  "version": "0.1.0",
+  "builtAt": "2026-10-30T12:58:41+08:00",
+  "source": "https://github.com/mikuniemo/dsh-ctf-kit（打包自本地 src 正本，构建路径已脱敏）",
+  "dshRequirement": ">= 0.2.1-rc.2",
+  "companion": "dsh-ctf-kit-knowledge-0.1.0.zip（可选知识层，相互独立）",
+  "packages": [
+    {
+      "name": "@local/dsh-ctf-preset",
+      "version": "0.1.0",
+      "role": "agent preset (ctf)",
+      "thirdPartyDeps": 0
+    },
+    {
+      "name": "@local/dsh-ctf-board",
+      "version": "0.1.0",
+      "role": "web UI view + status bar",
+      "thirdPartyDeps": 0
+    }
+  ],
+  "files": [
+    {
+      "path": "ctf-template/_project.json",
+      "bytes": 340,
+      "sha256": "4220cbc3ed1189497a90215a037b4598eda0a2863956e35a801b092b4803ae2a"
+    },
+    {
+      "path": "ctf-template/meta.json",
+      "bytes": 610,
+      "sha256": "41d214a3e4a8562869a7a7a802a3e18966d1edd00eef4d6b3b682816f56c98c1"
+    },
+    {
+      "path": "ctf-template/README.md",
+      "bytes": 1194,
+      "sha256": "5d6247981b5893ddbe57cd393af60386e41b0dd9159a37ae420eed1d282b760a"
+    },
+    {
+      "path": "ctf-template/runs/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ctf-template/runs/2026-01-01-0000-abcdef12.json",
+      "bytes": 316,
+      "sha256": "93926b55ea112196100ade36cfcbdd1442a9c23878f71dd5f5387d31ec6901e4"
+    },
+    {
+      "path": "INSTALL.md",
+      "bytes": 9296,
+      "sha256": "37bac1db93802afb7bbacbb92c141cd2a24ca97e85a157448859fd1d743dee6c"
+    },
+    {
+      "path": "install.ps1",
+      "bytes": 7474,
+      "sha256": "27dc4ac9ab0f5896bddcc32f319bc9365f7b9e485fc78a4c394e18fadd3276c0"
+    },
+    {
+      "path": "packages/dsh-ctf-board/client.js",
+      "bytes": 21927,
+      "sha256": "c6a14e667537783b9aa145ff8ff1dd56e6a36fab7f09aeb18a39c2435c80963a"
+    },
+    {
+      "path": "packages/dsh-ctf-board/cordis.patch.yml",
+      "bytes": 1138,
+      "sha256": "f0beb6f6ea9921e8922b05ebb47d12a313948505b79988ba34fdcc1e8cf72de9"
+    },
+    {
+      "path": "packages/dsh-ctf-board/index.js",
+      "bytes": 18506,
+      "sha256": "5ae68e1992f821641479d2ae414561f9e3ab9d7ed9244228f980bb732c39c7b3"
+    },
+    {
+      "path": "packages/dsh-ctf-board/package.json",
+      "bytes": 777,
+      "sha256": "cc77dc33caf6007fe1713586e388f59fb9449e4d25b28cadf2f9ada840169b3b"
+    },
+    {
+      "path": "packages/dsh-ctf-board/README.md",
+      "bytes": 1187,
+      "sha256": "99d19682a41dd68cb61d22c76bb98900abd8794aa450f69b84614e4e6b2fa8b0"
+    },
+    {
+      "path": "packages/dsh-ctf-preset/cordis.patch.yml",
+      "bytes": 10146,
+      "sha256": "73bcebf5fec0844abbd473337c0fa45ba165ed7d37ed6750b2f690fe1c77847a"
+    },
+    {
+      "path": "packages/dsh-ctf-preset/index.js",
+      "bytes": 836,
+      "sha256": "c96f8a8895b99a31efadcdd06e655502124a6815a8ff56022dca57a0fa2ad447"
+    },
+    {
+      "path": "packages/dsh-ctf-preset/package.json",
+      "bytes": 617,
+      "sha256": "670b50f9eb5542bccbe2c746bcb01dafc0c40f25203471691ded0c3fbb23b69e"
+    },
+    {
+      "path": "packages/dsh-ctf-preset/README.md",
+      "bytes": 1643,
+      "sha256": "c254b3e469a2c59269d7ae2a2e93f4c95ed5cd7f4a0cec6a66167012a4cf5f23"
+    },
+    {
+      "path": "uninstall.ps1",
+      "bytes": 2486,
+      "sha256": "5fc3fe71b8a2660e204a314aaa965325388cc958f4288bb3fb1f8c8667d986be"
+    }
+  ]
+}

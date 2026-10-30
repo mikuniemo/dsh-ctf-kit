@@ -1,0 +1,5 @@
+# 分发 zip 走 GitHub Release 资产，不进 git
+*.zip
+
+# 本机噪音
+Thumbs.db

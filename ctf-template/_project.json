@@ -1,0 +1,9 @@
+{
+  "name": "示例赛事-2026",
+  "platform": "平台名",
+  "url": "https://example.com/",
+  "startedAt": "2026-01-01",
+  "status": "active",
+  "dirs": ["C:\\work\\contest"],
+  "note": "dirs 用来把会话工作目录映射到这个项目：面板默认打开哪个项目，就看当前会话的 cwd 落在哪个项目的 dirs 里。"
+}

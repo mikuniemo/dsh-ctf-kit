@@ -1,21 +1,33 @@
 {
   "name": "dsh-ctf-kit",
-  "version": "0.2.0",
-  "builtAt": "2026-10-30T20:39:22+08:00",
+  "version": "0.3.0",
+  "builtAt": "2026-11-02T08:51:33.600Z",
   "source": "https://github.com/mikuniemo/dsh-ctf-kit",
   "dshRequirement": ">= 0.2.1-rc.2",
-  "companion": "无 —— 可选知识层（skills-ctf 热包 / 技能索引）自 0.2.0 起不随仓库分发，见 INSTALL.md §8",
+  "presets": [
+    {
+      "id": "security",
+      "order": 10,
+      "name": "安全测试"
+    },
+    {
+      "id": "ctf",
+      "order": 11,
+      "name": "CTF"
+    }
+  ],
+  "companion": "无 —— 可选知识层（skills-ctf 热包 / 技能索引）与 MCP 配置均不随仓库分发，见 INSTALL.md §8",
   "packages": [
     {
-      "name": "@local/dsh-ctf-preset",
-      "version": "0.2.0",
-      "role": "agent preset (ctf)",
+      "name": "@local/dsh-security-modes",
+      "version": "0.3.0",
+      "role": "安全模式层",
       "thirdPartyDeps": 0
     },
     {
       "name": "@local/dsh-ctf-board",
-      "version": "0.2.0",
-      "role": "web UI view + status bar",
+      "version": "0.3.0",
+      "role": "CTF 题板",
       "thirdPartyDeps": 0
     }
   ],
@@ -47,13 +59,13 @@
     },
     {
       "path": "INSTALL.md",
-      "bytes": 9715,
-      "sha256": "d6d6bb486678380364c1421e9df468d5f04c77551b9080bf7f43f9a9bebc7bea"
+      "bytes": 10737,
+      "sha256": "ea4287cb6f483cbfd63b27e3b60d8edcff29ea5f3fe86e001e7dd0c69b39376c"
     },
     {
       "path": "install.ps1",
-      "bytes": 8386,
-      "sha256": "e594a7a2769cfb1c059d754bd1136bad79a1373898bcabaf3eb7bed85a63b1bc"
+      "bytes": 9693,
+      "sha256": "f05b3194c5a00571ba1b66dd5f17b1aa32c33b6680508ae0e8e321afdfb46fc5"
     },
     {
       "path": "packages/dsh-ctf-board/client.js",
@@ -73,7 +85,7 @@
     {
       "path": "packages/dsh-ctf-board/package.json",
       "bytes": 775,
-      "sha256": "ddeeb1dbe344eae6a90eb932fb0a5bf48c71e76c81585174d2960eb838101f6a"
+      "sha256": "3abaefe9b2957e712c02fed363520b889b2eda2a3d861bac12a0f4359aba8e29"
     },
     {
       "path": "packages/dsh-ctf-board/README.md",
@@ -81,30 +93,45 @@
       "sha256": "584dd72c8e074459d23943dc673c1cd981fe24a73929ac1d60b92ee8a20f2b91"
     },
     {
-      "path": "packages/dsh-ctf-preset/cordis.patch.yml",
-      "bytes": 13237,
-      "sha256": "7ae3dad5d3dff85c089bd9fe5c805ec52aa33ffc1eeeecf47224c460ce708452"
+      "path": "packages/dsh-security-modes/cordis.patch.yml",
+      "bytes": 20299,
+      "sha256": "da745e1bb01a7a97b9ee43ffeaedf98be05d5f5d3642c3a7de137b7004a5dbc4"
     },
     {
-      "path": "packages/dsh-ctf-preset/index.js",
-      "bytes": 836,
-      "sha256": "c96f8a8895b99a31efadcdd06e655502124a6815a8ff56022dca57a0fa2ad447"
+      "path": "packages/dsh-security-modes/icon.svg",
+      "bytes": 704,
+      "sha256": "67a321c8e402243a5c840caa492e6ef049a70ace55fdd29d17aefed7362c1c29"
     },
     {
-      "path": "packages/dsh-ctf-preset/package.json",
-      "bytes": 617,
-      "sha256": "d2262e0d4e8384307617849b773ee46061b0bea4acf8ba2014ecbc5bdcb14b99"
+      "path": "packages/dsh-security-modes/index.js",
+      "bytes": 827,
+      "sha256": "b37979066dd757c9b6fdf9880d4ba638e7ae0ff3162fe65300bd3bc663d25d21"
     },
     {
-      "path": "packages/dsh-ctf-preset/README.md",
-      "bytes": 3265,
-      "sha256": "77279b68c510721a71f96010a2d3f19c03f6ed0a852c63622fe55039d10c74be"
+      "path": "packages/dsh-security-modes/locale/en.json",
+      "bytes": 333,
+      "sha256": "61a7269738ac069fba1855eb5bbb53003910c6e725669f1f51636970c5144287"
+    },
+    {
+      "path": "packages/dsh-security-modes/locale/zh.json",
+      "bytes": 289,
+      "sha256": "23ee62aebab38ec34779444a43a914e1d598da2568009900a22b86f9e005ec50"
+    },
+    {
+      "path": "packages/dsh-security-modes/package.json",
+      "bytes": 790,
+      "sha256": "702e080d4d63dbff8dbc985a13308d165634ddd00a5227c6aa11b84359d44f9f"
+    },
+    {
+      "path": "packages/dsh-security-modes/README.md",
+      "bytes": 3387,
+      "sha256": "0471d1dad0029a03a89b8f0563fb446f7b4853dc721198c278f2e744b02e42da"
     },
     {
       "path": "uninstall.ps1",
-      "bytes": 2486,
-      "sha256": "5fc3fe71b8a2660e204a314aaa965325388cc958f4288bb3fb1f8c8667d986be"
+      "bytes": 2492,
+      "sha256": "25b6c7bb322e729ccbfd1546d284f1b9226884a09cbd7c7f8f0b28a48b68577d"
     }
   ],
-  "note": "manifest 覆盖 kit 分发文件全集（不含仓库级 README.md / LICENSE / legacy/）；cordis.patch.yml 按安装期占位符 __DSH_HOME__ 原样哈希。"
+  "note": "manifest 覆盖 kit 分发文件全集（不含仓库级 README.md / LICENSE / legacy/ / manifest.json）；cordis.patch.yml 按安装期占位符 __DSH_HOME__ 原样哈希。"
 }

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "安全模式层（M7）",
+    "description": "两个 agent preset：security（授权渗透 / 红队 / 网安验证，带 RoE 授权段与技能路由）与 ctf（解题，速度优先）。切换模式后会话获得对应的工具集与授权声明。"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-ctf-board",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "CTF 题板：会话视图栏新增 CTF 独立视图，一题一卡展示 flag / 题解 / 错误 / 踩坑，数据取自 <DSH_HOME>\\ctf 题卡目录",

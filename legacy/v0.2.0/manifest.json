@@ -1,0 +1,110 @@
+{
+  "name": "dsh-ctf-kit",
+  "version": "0.2.0",
+  "builtAt": "2026-10-30T20:39:22+08:00",
+  "source": "https://github.com/mikuniemo/dsh-ctf-kit",
+  "dshRequirement": ">= 0.2.1-rc.2",
+  "companion": "无 —— 可选知识层（skills-ctf 热包 / 技能索引）自 0.2.0 起不随仓库分发，见 INSTALL.md §8",
+  "packages": [
+    {
+      "name": "@local/dsh-ctf-preset",
+      "version": "0.2.0",
+      "role": "agent preset (ctf)",
+      "thirdPartyDeps": 0
+    },
+    {
+      "name": "@local/dsh-ctf-board",
+      "version": "0.2.0",
+      "role": "web UI view + status bar",
+      "thirdPartyDeps": 0
+    }
+  ],
+  "files": [
+    {
+      "path": "ctf-template/_project.json",
+      "bytes": 340,
+      "sha256": "4220cbc3ed1189497a90215a037b4598eda0a2863956e35a801b092b4803ae2a"
+    },
+    {
+      "path": "ctf-template/meta.json",
+      "bytes": 610,
+      "sha256": "41d214a3e4a8562869a7a7a802a3e18966d1edd00eef4d6b3b682816f56c98c1"
+    },
+    {
+      "path": "ctf-template/README.md",
+      "bytes": 1194,
+      "sha256": "5d6247981b5893ddbe57cd393af60386e41b0dd9159a37ae420eed1d282b760a"
+    },
+    {
+      "path": "ctf-template/runs/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ctf-template/runs/2026-01-01-0000-abcdef12.json",
+      "bytes": 316,
+      "sha256": "93926b55ea112196100ade36cfcbdd1442a9c23878f71dd5f5387d31ec6901e4"
+    },
+    {
+      "path": "INSTALL.md",
+      "bytes": 9715,
+      "sha256": "d6d6bb486678380364c1421e9df468d5f04c77551b9080bf7f43f9a9bebc7bea"
+    },
+    {
+      "path": "install.ps1",
+      "bytes": 8386,
+      "sha256": "e594a7a2769cfb1c059d754bd1136bad79a1373898bcabaf3eb7bed85a63b1bc"
+    },
+    {
+      "path": "packages/dsh-ctf-board/client.js",
+      "bytes": 21927,
+      "sha256": "c6a14e667537783b9aa145ff8ff1dd56e6a36fab7f09aeb18a39c2435c80963a"
+    },
+    {
+      "path": "packages/dsh-ctf-board/cordis.patch.yml",
+      "bytes": 1180,
+      "sha256": "106d7bd550df6b64a0e74a8dc7da9a37c28c2d3d58b1ffb60f8eac39a0fe769e"
+    },
+    {
+      "path": "packages/dsh-ctf-board/index.js",
+      "bytes": 18506,
+      "sha256": "5ae68e1992f821641479d2ae414561f9e3ab9d7ed9244228f980bb732c39c7b3"
+    },
+    {
+      "path": "packages/dsh-ctf-board/package.json",
+      "bytes": 775,
+      "sha256": "ddeeb1dbe344eae6a90eb932fb0a5bf48c71e76c81585174d2960eb838101f6a"
+    },
+    {
+      "path": "packages/dsh-ctf-board/README.md",
+      "bytes": 4446,
+      "sha256": "584dd72c8e074459d23943dc673c1cd981fe24a73929ac1d60b92ee8a20f2b91"
+    },
+    {
+      "path": "packages/dsh-ctf-preset/cordis.patch.yml",
+      "bytes": 13237,
+      "sha256": "7ae3dad5d3dff85c089bd9fe5c805ec52aa33ffc1eeeecf47224c460ce708452"
+    },
+    {
+      "path": "packages/dsh-ctf-preset/index.js",
+      "bytes": 836,
+      "sha256": "c96f8a8895b99a31efadcdd06e655502124a6815a8ff56022dca57a0fa2ad447"
+    },
+    {
+      "path": "packages/dsh-ctf-preset/package.json",
+      "bytes": 617,
+      "sha256": "d2262e0d4e8384307617849b773ee46061b0bea4acf8ba2014ecbc5bdcb14b99"
+    },
+    {
+      "path": "packages/dsh-ctf-preset/README.md",
+      "bytes": 3265,
+      "sha256": "77279b68c510721a71f96010a2d3f19c03f6ed0a852c63622fe55039d10c74be"
+    },
+    {
+      "path": "uninstall.ps1",
+      "bytes": 2486,
+      "sha256": "5fc3fe71b8a2660e204a314aaa965325388cc958f4288bb3fb1f8c8667d986be"
+    }
+  ],
+  "note": "manifest 覆盖 kit 分发文件全集（不含仓库级 README.md / LICENSE / legacy/）；cordis.patch.yml 按安装期占位符 __DSH_HOME__ 原样哈希。"
+}

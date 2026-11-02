@@ -1,0 +1,32 @@
+{
+  "name": "@local/dsh-security-modes",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "description": "安全模式层：声明 security（授权渗透 / 红队 / 检测验证）与 ctf（CTF 解题）两个 agent preset。零第三方依赖，全部使用 dsh 自带插件",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./locale/en.json": "./locale/en.json",
+    "./locale/zh.json": "./locale/zh.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "locale",
+    "icon.svg",
+    "README.md"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "dsh": {
+    "plugin": true,
+    "kind": "server",
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

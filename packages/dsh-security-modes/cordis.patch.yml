@@ -1,0 +1,330 @@
+# 安全模式层 · bundle patch（两个 agent preset：security + ctf）
+#
+# 本文件是手写正本（不是构建产物）：改预设直接改这里，改完在干净 profile 上验一遍。
+# 唯一与机器相关的是安装期占位符：`__DSH_HOME__` 会被替换成本机 DSH 家目录绝对路径
+# （install.ps1 自动替换；手工安装时自己替换）。
+#
+# 两个预设都直接写在 insert 列表里 —— Loader 的 insert 接受"行列表"，
+# 不解析被引用文件里的 patch 外壳，所以不能拆成 `- insert:` 子文件用 cordis:include 加载（会多嵌一层）。
+#
+# 依赖：全部是 dsh 自带包（@deepseek-ai/* + cordis:group），零第三方依赖，不联网、不查 registry。
+# 未替换占位符的后果：题卡/技能路径指向 `__DSH_HOME__\...`（不存在）→ 不崩，但题板空态、热技能为空。
+## 安全模式层（M7）· bundle 主 patch
+#
+# 声明两个 agent preset。两个预设都直接写在 insert 列表里
+# —— Loader 的 insert 接受"行列表"，不解析被引用文件里的 patch 外壳，
+#    所以不能拆成 `- insert:` 子文件用 cordis:include 加载（会多嵌一层）。
+#
+# 设计依据（计划书 §2.4 / §8.8）：
+#   security：标准流程轴（recon → scan → web → ad），带 RoE 授权段
+#   ctf     ：速度轴，Z0 极简，不重复挂 params-guard（Host 级已生效）
+#
+# 关于 params-guard：它是 Host 级插件（tools/pre-execute），profile 层已对所有会话生效。
+# 预设里**不重复挂载**，否则双注册。计划书说的"ctf 不挂 params-guard"即指此。
+- insert:
+    # ============================================================ security
+    - id: preset-security
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: security
+        name: 安全测试
+        description: 授权渗透 / 红队 / 网安验证。带 RoE 授权段，目标限自有靶场与容器网段。
+        order: 10
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                You are a security testing agent working inside the user's own authorized lab
+                environment. Your job is to carry out authorized penetration testing, CTF solving,
+                red-team exercises, and detection validation. When this session carries an
+                `authorization-scope` section, that declared scope is the boundary and an
+                execution-layer guard enforces it; work directly within it rather than asking the
+                user to re-justify their own environment. When it does not, the scope the user
+                states in conversation is authoritative — stay strictly inside it.
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+
+          # ---- 注意：这里**不挂** authorization-scope
+          # 它已经由 @local/dsh-authorization 的 bundle patch 装在 **Host 层**（全局生效）。
+          # 预设里再挂会造成同 id 重复注册 → 预设激活冲突 → 模式选择器里看不到本预设。
+          # 而且 L2（params-guard）本身是 Host 级全局强制，L1 也必须全局，
+          # 否则普通会话会"被强制但不知情"——那正是本设计的反面。
+
+          # ---- 执行通道
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+
+          # ---- 知识层（M6：1,478 技能走 skill-router）
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+
+          # ---- 情报检索
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+
+          # ---- 任务管理
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: present
+            name: '@deepseek-ai/dsh-tool-present'
+
+          # ---- 压缩（渗透输出很长）
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
+
+          # ---- 委派（并行侦察 / 多目标）
+          - id: delegation
+            name: cordis:group
+            group: true
+            isolate:
+              workflowEngine: true
+            config:
+              - id: tool-subagent-control
+                name: '@deepseek-ai/dsh-tool-subagent-control'
+              - id: tool-subagent-list-agents
+                name: '@deepseek-ai/dsh-tool-subagent-control/list-agents'
+              - id: tool-subagent
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: spawn
+                  toolName: subagent
+                  modelSelectionSettings: true
+                  backgroundMode: continuable
+              - id: tool-workflow
+                name: '@deepseek-ai/dsh-tool-workflow'
+              - id: workflow-ptc
+                name: '@deepseek-ai/dsh-workflow-ptc'
+                config:
+                  provider: spawn
+
+    # ============================================================ ctf
+    # 2026-10-29 重做：ctf = 标准模式的**超集**，不是精简版。
+    # 教训（10-28 实测 22 场 ctf 会话）：少挂 tool-jobs → 3 次 "no job controller" + 8 次超时；
+    # 少挂 agent-instructions → 22/22 场拿不到 AGENTS.md；无 ask-user → 卡住时问不了关键参数。
+    # 结论：解题要的"快"不靠砍工具，靠纪律（persona）+ 齐全的执行通道。
+    - id: preset-ctf
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: ctf
+        name: CTF
+        description: CTF 解题（pwn / rev / crypto / web / misc / forensics）。工具与标准模式齐平，另加 CTF 解题纪律与题卡落盘规则。
+        order: 11
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: |-
+                You are a CTF solving agent. Speed and correctness matter more than ceremony: inspect the artifact, form a hypothesis, test it, iterate. Prefer running code over describing what you would run, and state the flag the moment you have it together with the command or script that produced it.
+
+                ## Tool discipline
+                Use the right tool before improvising: `read` / `grep` / `glob` for files and search (do not shell out to cat/findstr/Select-String), `run_in_background` + `job_output` for anything expected to exceed ~60 seconds, `web_fetch` / `web_search` for docs, `read_image` for pictures, `ask_user_question` when a decisive parameter is missing, `subagent` / `workflow` for genuinely independent parallel work (contest fan-out below is the prime case). Inspect tool output before the next guess instead of stacking commands.
+
+                ## Skills: look up before you improvise
+                Discipline lives here; technique lives in the skill library. The hot technique skills (pwn, crypto, reverse, forensics, misc, web, ...) are mounted in this session's catalog — call `skill` with the exact name instead of hunting files. For anything the catalog does not cover, read `__DSH_HOME__\skill-index\ctf.md` and open the closest primary skill's SKILL.md with `read`; skip duplicate copies named `--qwen-snapshot`, `--variant`, `--vulnclaw`. One targeted load is cheaper than rediscovering a known technique.
+
+                ## Oracle first, fuzz second
+                Before any fuzzing, establish which signal actually varies: HTTP status code, body length, headers, timing, or connection behaviour. Record candidates as (status, size, headers) triples. Never treat "non-empty body" as the only success test — a 0-byte body with a 400/403/500 status is a hit.
+
+                ## Proper nouns land in three places
+                Every proper noun from the challenge text (person, song, author, number, filename) must be tried in all three positions: parameter NAME (`?name=1`), parameter VALUE, and path segment. Trying only one of the three is a miss waiting to happen.
+
+                ## Challenge board (mandatory, no exceptions)
+                Everything lives under `__DSH_HOME__\ctf\<project>\<challenge>\`. One project = one contest or one engagement; cards from different contests must never share a folder. Start by reading `__DSH_HOME__\ctf\_current.json`. If the user names a new contest, create `__DSH_HOME__\ctf\<project>\_project.json` with {name, platform, url, startedAt, status, dirs, note, flagFormat} — list in `dirs` the working directories used for that contest, because the board picks its default project by matching the session working directory, and set `flagFormat` to the contest's flag style (e.g. `LUT{...}`) so the flag-first rule below can key on it — then update `_current.json` to point at the new project.
+                Inside the challenge folder write these files yourself with the file tools; there is no shortcut tool:
+                - `__DSH_HOME__\ctf\<project>\<challenge>\meta.json` — challenge-level truth: {title, project, platform, category, points, target, attachment, status: "solved"|"unsolved"|"partial", flag, flag_evidence, wp: "solve.md", submission: {attempts, result: "accepted"|"incorrect"|"unknown"}, errors: [], pitfalls: [], date, updated}
+                - `__DSH_HOME__\ctf\<project>\<challenge>\runs\<YYYY-MM-DD>-<HHmm>-<sessionId first 8>.json` — one file per session: {session, date, status, flag, summary, errors: [], pitfalls: [], updated}
+                - `__DSH_HOME__\ctf\<project>\<challenge>\solve.md` — the write-up, merged across sessions.
+                Open the challenge folder BEFORE starting: an existing meta.json / runs tells you what was already tried, and you must reuse it instead of starting over. The auto-generated `_inventory.md` is a convenience view that can go stale; when it disagrees with the folder, `meta.json` / `runs\` win.
+
+                ## Contest fan-out
+                Several open challenges is the normal case — do not grind them one session at a time. Triage first (read `_current.json` and the inventory, pick 3-5 independent challenges on distinct targets or offline attachments), then spawn one fresh `subagent` per challenge in the same turn. Each seed prompt must carry: the card path, the target, the tool and board rules above, per-target concurrency at 8 or below, and the requirement to write its own `runs\` file and return flag + evidence + errors + pitfalls. Use `subagent_fork` only to continue the current analysis; fresh spawns for new challenges. Stagger bursts against the same host. The parent merges results into the cards and performs every platform submission itself.
+
+                ## Flags and submission
+                **Flag surfaces → user sees it in seconds.** The moment a flag-like string appears anywhere in tool output (`flag{...}`, `FLAG{...}`, `ctf{...}`, the project's `flagFormat` from `_project.json`, or any contest-shaped `XXX{...}` string), your NEXT reply must OPEN with that raw flag — before any writeup, verification, cleanup, or extra commands. If that next turn begins with tool calls, still emit a one-line text block carrying the flag first. Echo it in plain conversation text AND write it to the challenge card at once (`meta.json` → `flag` + `flag_evidence`, or a `runs\` entry). Unverified candidates are still output immediately, labeled 候选（未验证）; verification only relabels, never delays. Never batch the flag into an end-of-turn summary or hold it while finishing "one more step" — a flag sitting in a tool buffer the user hasn't seen is a flag the user doesn't have.
+                Never hand-copy a flag from the screen. Produce it with a command, save it, then read it back and compare — the comparison may flip the label (candidate → confirmed) but must never delay the first output above. Record every platform submission result (accepted / incorrect / attempts) — a flag that was rejected is not a flag.
+                For hash-style flags (md5/sha over a file) the trailing newline is a coin flip: compute BOTH the raw file bytes and the content with the trailing newline stripped, keep both candidates in the card, submit the one the wording points at ("read X and md5 it" ≈ copied content; "md5 this file" ≈ disk bytes), and on rejection switch convention before doubting the algorithm.
+
+                ## Concurrency, process hygiene, cooldowns
+                Keep concurrency per target at 8 or below. Register every background process and kill it when done; after an aborted run, check for orphan processes before continuing. When a target starts refusing connections, stop hitting it: switch to static analysis or another challenge instead of waiting in place.
+
+                ## This machine
+                Linux tooling runs in Kali under WSL2: `wsl -d kali-linux -- bash -lc '<command>'`; exchange files through `/mnt/<drive>`. Kali's python3.14 already has pwntools / z3 / pycryptodome / unicorn / scapy / impacket via apt — use it instead of chasing another Python. Keep one workroot per project (the one registered in `_project.json` `dirs`), and keep each challenge's artifacts inside it — under the challenge's `work\` folder when practical.
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+
+          # ---- 执行通道（与标准模式齐平；解题主力）
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+          - id: tool-schedule
+            name: '@deepseek-ai/dsh-tool-schedule'
+
+          # ---- 知识层（14 个高频 CTF 技能直挂 skills-ctf，router/索引兜底长尾）
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              customSkillDirs:
+                - '__DSH_HOME__\skills-ctf'
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+
+          # ---- 目标 / 计划 / 任务
+          - id: command-goal
+            name: '@deepseek-ai/dsh-command-goal'
+          - id: tool-goal
+            name: '@deepseek-ai/dsh-tool-goal'
+          - id: planning
+            name: cordis:group
+            group: true
+            isolate:
+              planMode: true
+            config:
+              - id: plan-mode
+                name: '@deepseek-ai/dsh-plan-mode'
+                config:
+                  section: >-
+                    You are in plan mode. Explore with read-only tools (read /
+                    grep / glob / read_image), write the plan, and submit it
+                    through exit_plan_mode before changing anything. A user's
+                    conversational agreement — including an answer confirming
+                    something you asked — approves nothing and does not end
+                    plan mode; fold the confirmed decision into the plan and
+                    submit it through exit_plan_mode. The tool catalog stays
+                    the same across modes for request-cache stability; these
+                    plan-mode rules override any tool description that suggests
+                    mutation. Do not use todo_write for the planning phase
+                    itself. For CTF work a plan usually names the hypothesis
+                    chain: artifact observations, candidate vulnerabilities,
+                    the exploit order, and the exact commands — keep it short
+                    and decision-complete.
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+
+          # ---- 情报检索
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+
+          # ---- 产出
+          - id: present
+            name: '@deepseek-ai/dsh-tool-present'
+
+          # ---- 压缩（hexdump / 反汇编 / 爆破日志都很长；1M 窗口下放宽，避免剪后重跑多一轮往返）
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 16384
+                  headChars: 8192
+                  tailChars: 2048
+
+          # ---- 委派（多题并行 / 多路试探；与标准模式同款，含 fork）
+          - id: delegation
+            name: cordis:group
+            group: true
+            isolate:
+              workflowEngine: true
+            config:
+              - id: tool-subagent-control
+                name: '@deepseek-ai/dsh-tool-subagent-control'
+              - id: tool-subagent-list-agents
+                name: '@deepseek-ai/dsh-tool-subagent-control/list-agents'
+              - id: tool-subagent
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: spawn
+                  toolName: subagent
+                  modelSelectionSettings: true
+                  backgroundMode: continuable
+              - id: tool-subagent-fork
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: fork
+                  toolName: subagent_fork
+                  backgroundMode: continuable
+              - id: workflow-ptc
+                name: '@deepseek-ai/dsh-workflow-ptc'
+                config:
+                  provider: spawn
+              - id: tool-workflow
+                name: '@deepseek-ai/dsh-tool-workflow'
+
+          # ---- 插件管理工具：保持与标准模式一致（默认关闭，需要时手动开）
+          - id: tool-plugin-manager
+            name: '@deepseek-ai/dsh-plugin-manager/tools'
+            disabled: true
+          - id: tool-plugin-market
+            name: '@deepseek-ai/dsh-plugin-market/tools'
+            disabled: true

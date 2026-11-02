@@ -1,7 +1,7 @@
 #Requires -Version 7.0
 <#
 .SYNOPSIS
-    卸载 DSH CTF 模式包（install.ps1 的逆操作）。
+    卸载 DSH 安全模式层（install.ps1 的逆操作）。
 
 .DESCRIPTION
     去掉 package.json 里的 dependencies 与 bundles 条目，可选删除 <DSH_HOME>\local-bundles 下的副本。
@@ -17,7 +17,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$packages = @('dsh-ctf-preset', 'dsh-ctf-board')
+$packages = @('dsh-security-modes', 'dsh-ctf-board')
 
 function Say($msg) { Write-Host $msg }
 

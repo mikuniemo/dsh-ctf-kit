@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Security Presets (M7)",
+    "description": "Two agent presets: security (authorized pentest, red team, detection validation — with a RoE authorization section and skill routing) and ctf (challenge solving, speed first). Selecting one gives the session its tool set and authorization declaration."
+  }
+}
